@@ -74,20 +74,23 @@ public class TriggerActivity extends AppCompatActivity implements View.OnClickLi
     private void sendOutPanic(Location loc) {
         String keyword = getSharedPreferences("conf", MODE_PRIVATE).getString(getString(R.string.var_words_keyword), "Panic");
         SmsManager manager = SmsManager.getDefault();
-        for (Contact c : notifyContacts) {
-            StringBuilder sb = new StringBuilder(keyword);
-            if (loc != null) {
-                sb.append("\n" + loc.getLatitude() + "\n" + loc.getLongitude());
-                sb.append("\n " + "http://www.google.com/maps/place/" + loc.getLatitude() + "," + loc.getLongitude() + " \n");
-            }
-
-            manager.sendTextMessage(c.number, null, sb.toString(), null, null);
-
-            if (callEmergServices()) {
+        if (callEmergServices()) {
+            Intent emergService = new Intent(Intent.ACTION_CALL);
+            emergService.setData(Uri.parse("tel:102"));
+            startActivity(emergService);
+            return;
+        }
+        else {
+            for (Contact c : notifyContacts) {
+                StringBuilder sb = new StringBuilder(keyword);
+                if (loc != null) {
+                    sb.append("\n" + loc.getLatitude() + "\n" + loc.getLongitude());
+                    sb.append("\n " + "http://www.google.com/maps/place/" + loc.getLatitude() + "," + loc.getLongitude() + " \n");
+                }
+                manager.sendTextMessage(c.number, null, sb.toString(), null, null);
                 Intent emergService = new Intent(Intent.ACTION_CALL);
                 emergService.setData(Uri.parse("tel:102"));
                 startActivity(emergService);
-                return;
             }
         }
     }
@@ -109,8 +112,7 @@ public class TriggerActivity extends AppCompatActivity implements View.OnClickLi
 
     private boolean callEmergServices() {
         Set<String> contacts = getSharedPreferences("conf", MODE_PRIVATE).getStringSet(getString(R.string.var_numbers_notify), new HashSet<String>());
-//        return contacts.isEmpty();
-        return true;
+        return contacts.isEmpty();
     }
 
     @Override

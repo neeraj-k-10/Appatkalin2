@@ -25,6 +25,8 @@ import java.util.Set;
 import at.tacticaldevc.panictrigger.contactList.Contact;
 import at.tacticaldevc.panictrigger.utils.Utils;
 
+import static java.lang.Thread.sleep;
+
 public class TriggerActivity extends AppCompatActivity implements View.OnClickListener, LocationListener {
     private Vibrator v;
     private Contact[] notifyContacts;
@@ -136,16 +138,17 @@ public class TriggerActivity extends AppCompatActivity implements View.OnClickLi
 //        if (!Utils.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
         if (requestCode == 255 && grantResults.length>0) {
             for (int grantResult : grantResults) {
-                if(grantResult!=PackageManager.PERMISSION_GRANTED)
-                    new AlertDialog.Builder(TriggerActivity.this)
-                        .setTitle("Please restart the app!")
-                        .setMessage("It looks like not all permissions have been granted.\nPlease grant them or the app will not work!")
-                        .show();
-                try {
-                    wait(2000);
-                    finish();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                if(grantResult!=PackageManager.PERMISSION_GRANTED) {
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(TriggerActivity.this)
+                            .setTitle("The app will restart!")
+                            .setMessage("It looks like not all permissions have been granted.\nPlease grant them or the app will not work!");
+                    alertDialog.show();
+                    try {
+                        sleep(2000);
+                        finish();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             findViewById(R.id.triggerButton).setEnabled(false);

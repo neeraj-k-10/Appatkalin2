@@ -1,6 +1,7 @@
 package at.tacticaldevc.panictrigger;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -74,12 +76,13 @@ public class TriggerActivity extends AppCompatActivity implements View.OnClickLi
     private void sendOutPanic(Location loc) {
         String keyword = getSharedPreferences("conf", MODE_PRIVATE).getString(getString(R.string.var_words_keyword), "Panic");
         SmsManager manager = SmsManager.getDefault();
+
         if (callEmergServices()) {
             Intent emergService = new Intent(Intent.ACTION_CALL);
             emergService.setData(Uri.parse("tel:102"));
             startActivity(emergService);
-            return;
         }
+
         else {
             for (Contact c : notifyContacts) {
                 StringBuilder sb = new StringBuilder(keyword);
@@ -87,7 +90,29 @@ public class TriggerActivity extends AppCompatActivity implements View.OnClickLi
                     sb.append("\n" + loc.getLatitude() + "\n" + loc.getLongitude());
                     sb.append("\n " + "http://www.google.com/maps/place/" + loc.getLatitude() + "," + loc.getLongitude() + " \n");
                 }
+
+
+                TelephonyManager phoneMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                String wantPermission = Manifest.permission.READ_PHONE_STATE;
+                if (this.checkSelfPermission(wantPermission) != PackageManager.PERMISSION_GRANTED) {
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(TriggerActivity.this)
+                            .setTitle("The app will restart!")
+                            .setMessage("It looks like not all permissions have been granted.\nPlease grant them or the app will not work!");
+                    alertDialog.show();
+                    try {
+                        sleep(2000);
+                        finish();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                String phonenumber = phoneMgr.getLine1Number();
+                Toast.makeText(this, "PhoneNumber: " + phonenumber, Toast.LENGTH_SHORT).show();
+
+//                manager.sendTextMessage(c.number, phonenumber, sb.toString(), null, null);
                 manager.sendTextMessage(c.number, null, sb.toString(), null, null);
+
+                //make call to 102
                 Intent emergService = new Intent(Intent.ACTION_CALL);
                 emergService.setData(Uri.parse("tel:102"));
                 startActivity(emergService);
@@ -98,10 +123,10 @@ public class TriggerActivity extends AppCompatActivity implements View.OnClickLi
     private void getCurrentLocationAndPanic() {
         LocationManager locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         try {
-            if (locManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-                locManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, null);
-            else if (locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+            if (locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
                 locManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, this, null);
+            else if (locManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                locManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, null);
             else
                 sendOutPanic(locManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER));
         } catch (Exception e) {
@@ -147,7 +172,7 @@ public class TriggerActivity extends AppCompatActivity implements View.OnClickLi
                     alertDialog.show();
                     try {
                         sleep(2000);
-                        finish();
+                        this.finish();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

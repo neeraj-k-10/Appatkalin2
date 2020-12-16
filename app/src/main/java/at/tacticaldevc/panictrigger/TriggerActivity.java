@@ -74,10 +74,13 @@ public class TriggerActivity extends AppCompatActivity implements View.OnClickLi
         SmsManager manager = SmsManager.getDefault();
         for (Contact c : notifyContacts) {
             StringBuilder sb = new StringBuilder(keyword);
-            if (loc != null)
+            if (loc != null) {
                 sb.append("\n" + loc.getLatitude() + "\n" + loc.getLongitude());
+                sb.append("\n " + "http://www.google.com/maps/place/" + loc.getLatitude() + "," + loc.getLongitude() + " \n");
+            }
 
             manager.sendTextMessage(c.number, null, sb.toString(), null, null);
+
             if (callEmergServices()) {
                 Intent emergService = new Intent(Intent.ACTION_CALL);
                 emergService.setData(Uri.parse("tel:102"));

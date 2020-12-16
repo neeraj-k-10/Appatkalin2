@@ -91,7 +91,6 @@ public class TriggerActivity extends AppCompatActivity implements View.OnClickLi
                     sb.append("\n " + "http://www.google.com/maps/place/" + loc.getLatitude() + "," + loc.getLongitude() + " \n");
                 }
 
-
                 TelephonyManager phoneMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
                 String wantPermission = Manifest.permission.READ_PHONE_STATE;
                 if (this.checkSelfPermission(wantPermission) != PackageManager.PERMISSION_GRANTED) {

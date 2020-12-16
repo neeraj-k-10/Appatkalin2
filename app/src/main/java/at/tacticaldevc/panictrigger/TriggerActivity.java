@@ -1,6 +1,7 @@
 package at.tacticaldevc.panictrigger;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -74,7 +76,8 @@ public class TriggerActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void sendOutPanic(Location loc) {
-        String keyword = getSharedPreferences("conf", MODE_PRIVATE).getString(getString(R.string.var_words_keyword), "Panic");
+//        String keyword = getSharedPreferences("conf", MODE_PRIVATE).getString(getString(R.string.var_words_keyword), "Panic");
+        @SuppressLint("WrongConstant") String keyword = (PreferenceManager.getDefaultSharedPreferences(this).getString("keyword", "Panic"));
         SmsManager manager = SmsManager.getDefault();
 
         if (callEmergServices()) {

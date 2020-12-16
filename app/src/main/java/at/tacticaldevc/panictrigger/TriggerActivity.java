@@ -106,8 +106,8 @@ public class TriggerActivity extends AppCompatActivity implements View.OnClickLi
                         e.printStackTrace();
                     }
                 }
-                String phonenumber = phoneMgr.getLine1Number();
-                Toast.makeText(this, "PhoneNumber: " + phonenumber, Toast.LENGTH_SHORT).show();
+//                String phonenumber = phoneMgr.getLine1Number();
+//                Toast.makeText(this, "PhoneNumber: " + phonenumber, Toast.LENGTH_SHORT).show();
 
 //                manager.sendTextMessage(c.number, phonenumber, sb.toString(), null, null);
                 manager.sendTextMessage(c.number, null, sb.toString(), null, null);

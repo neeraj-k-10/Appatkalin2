@@ -53,7 +53,6 @@ public class Utils {
         return contacts.toArray(new Contact[contacts.size()]);
     }
 
-
     //permission related stuff
     public static String[] checkPermissions(Context c)
     {
